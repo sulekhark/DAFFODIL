@@ -51,7 +51,7 @@ All inputs required by DAFFODIL are given as configuration parameters in a confi
 ---
 Perform the steps below to analyze a banchmark:
    - Create a config file daffodil.cfg for a benchmark that needs to be analyzed. Configuration options are explained above.
-   - Execute thus:
+   - Execute:
 
      `<WORK_DIR>\DAFFODIL\src\app\Daffodil.FactGeneratorSA\bin\Debug\Daffodil.FactGeneratorSA.exe daffodil.cfg`.
 
