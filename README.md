@@ -30,6 +30,8 @@ DAFFODIL requires a Datalog solver. All the analysis files in src/datalog and th
 
 Checkout DAFFODIL in some directory, say, <WORK_DIR>.
 
+Execute dos2unix on all files in the src/datalog directory. This can be automated in any way: by using a .bat file, or a PowerShell script or a executing a bash script under Git bash.
+
 Open <WORK_DIR>/DAFFODIL/DAFFODIL.sln in VisualStudio and build.
 
 
