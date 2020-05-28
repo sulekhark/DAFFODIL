@@ -14,7 +14,7 @@ namespace Daffodil.FactGeneratorSA
         {
             if (args.Length == 0)
             {
-                ConfigParams.LoadConfig(@"C:\Users\sulek\work\DAFFODIL\src\test\T4\daffodil.cfg");
+                ConfigParams.LoadConfig(@"C:\Users\sulek\work\DAFFODIL\src\test\E2EDemoF\daffodil.cfg");
             }
             else if (args.Length == 1)
             {
