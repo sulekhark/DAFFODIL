@@ -13,7 +13,7 @@ DAFFODIL is a Datalog analysis framework written in C#. It takes as input .NET e
 **Acknowledgements**
 ---
 
-DAFFODIL uses the code from AnalysisNet to read .NET bytecode, convert it into three-address-instructions in SSA form and perform intraprocedural optimizations. The version used here has been checked out from the fork at: AnalysisNet](https://github.com/m7nu3l/analysis-net.git), branch: cci-version-tinybct, revision: 6f80d3d16d4324. Their license file has been moved to src/lib/Daffodil.DatalogAnalysisFW/AnalysisNetBackend.
+DAFFODIL uses the code from AnalysisNet to read .NET bytecode, convert it into three-address-instructions in SSA form and perform intraprocedural optimizations. The version used here has been checked out from the fork at: [AnalysisNet](https://github.com/m7nu3l/analysis-net.git), branch: cci-version-tinybct, revision: 6f80d3d16d4324. Their license file has been moved to src/lib/Daffodil.DatalogAnalysisFW/AnalysisNetBackend.
 
 The pointer analysis code in src/datalog/CIPtrAnalysis.datalog started off with the base pointer analysis in [Chord](https://bitbucket.org/psl-lab/jchord/src/master/), removed the support for reflection, added support for pointers, delegates, and value types like structs. 
 
