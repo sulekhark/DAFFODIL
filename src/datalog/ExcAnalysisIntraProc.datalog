@@ -1,7 +1,3 @@
-# Author: Sulekha Kulkarni 
-# Date: January 2020
-
-
 .include "T.dom"                         # domain of types
 .include "EH.dom"                        # domain of exception handlers
 .include "P.dom"                         # domain of program points
@@ -9,6 +5,9 @@
 .include "I.dom"                         # domain of invoke statements
 .include "V.dom"                         # domain of variables
 
+
+# Author: Sulekha Kulkarni 
+# Date: January 2020
 
 
 # Input Relations
