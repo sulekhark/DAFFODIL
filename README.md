@@ -50,7 +50,7 @@ All inputs required by DAFFODIL are given as configuration parameters in a confi
 **Usage**
 ---
 Perform the steps below to analyze a banchmark:
-   - Create a config file daffodil.cfg for a benchmark that needs to be analyzed. Configuration options are explained above.
+   - Create a config file daffodil.cfg for a benchmark that needs to be analyzed. Configuration options are explained above. NOTE: Directories <DATALOG_DIR> and <LOG_DIR> need to be already created.
    - Execute:
 
      `<WORK_DIR>\DAFFODIL\src\app\Daffodil.FactGeneratorSA\bin\Debug\Daffodil.FactGeneratorSA.exe daffodil.cfg`.
@@ -59,7 +59,7 @@ Perform the steps below to analyze a banchmark:
    - Execute: `cp <WORK_DIR>\DAFFODIL\src\datalog\* <DATALOG_DIR>`.
    - Execute: `. ./run_all.sh` in <DATALOG_DIR>.
        + I tar up the <DATALOG_DIR>, take it to a linux machine on which I have installed Z3 and execute run_all.sh on the linux machine. This is because Z3 consumes a large amount of memory to execute the pointer analysis on realistic benchmarks. Moreover, once the program to be analyzed is converted to a relational form, it is no longer Windows-specific.
-       + Z3 produces a text output that is a dump of all the facts of the output relations to stdout. The script src/datalog/parse_z3_out.py (see run_all.sh) is a python script to parse this output and populate the output relations.
+       + The solver Z3 produces a text output that is a dump of all the facts of the output relations to stdout. The script src/datalog/parse_z3_out.py (see run_all.sh) is a python script to parse this output and populate the output relations.
        + Alternatively, instead of the file interface to Z3 implemented in DAFFODIL, a more efficient option will be to invoke Z3 programmatically using the library interfaces provided by Z3. 
 
 
