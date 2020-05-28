@@ -4,7 +4,7 @@ DAFFODIL is a Datalog analysis framework written in C#. It takes as input .NET e
    - Computing the scope of classes and methods for analysis: Computes scope using RTA (Rapid Type Analysis).
        + Handles generic types and methods.
    - Fact generation: Converts program text into Datalog domains, and relations over those domains.
-   - Pointer analysis: Contains a context-insensitive flow-insensitive Andersen-style pointer analysis together with exception analysis written in Datalog (ref: [[Paper](https://people.cs.umass.edu/~yannis/doop-issta09prelim.pdf)]).
+   - Pointer analysis: Contains a context-insensitive flow-insensitive Andersen-style pointer analysis together with exception analysis written in Datalog (ref: [Paper](https://people.cs.umass.edu/~yannis/doop-issta09prelim.pdf)).
        + Handles address-taken and pointer dereferencing.
        + Handles value types like structs.
        + Models delegates.
