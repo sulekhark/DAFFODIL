@@ -1,0 +1,327 @@
+# Copyright (c) 2008-2010, Intel Corporation.
+# Copyright (c) 2006-2007, The Trustees of Stanford University.
+# All rights reserved.
+# Licensed under the terms of the New BSD License.
+
+# Context-insensitive may-alias/call-graph analysis.
+
+# Original Author: Mayur Naik (mhn@cs.stanford.edu)
+# Major modifications for handling C#-specific features and exception handling: Sulekha Kulkarni
+
+
+.include "T.dom"                         # domain of types
+.include "F.dom"                         # domain of fields
+.include "M.dom"                         # domain of methods
+.include "I.dom"                         # domain of invoke statements
+.include "H.dom"                         # domain of allocation sites
+.include "V.dom"                         # domain of variables
+.include "Z.dom"                         # domain of integer indexes
+.include "X.dom"                         # domain of addresses for objects, fields of objects, structs whose address can be taken and methods.
+.include "P.dom"                         # domain of program points
+.include "EH.dom"                        # domain of exception handlers 
+
+###
+# Relations
+###
+
+relT(t:T) input
+relF(f:F) input
+relM(m:M) input
+relI(i:I) input
+relH(h:H) input
+relV(v:V) input
+relZ(z:Z) input
+relX(x:X) input
+relP(p:P) input
+relEH(eh:EH) input
+
+HT(h:H,t:T) input                        # AllocSite h has Type t
+cha(n:M,t:T,m:M) input                   # For receiver object of Type t, virtual/interface/overridable Method n resolves to Method m.
+sub(t1:T,t2:T) input                     # Type t1 is a subtype of Type t2
+MmethArg(m:M,n:Z,v:V) input              # Variable v is the nth parameter of Method m
+MmethRet(m:M,n:Z,v:V) input              # Variable v is returned from Method m (n is always 0 - not used).
+IinvkArg0(i:I,v:V) input                 # Variable v is the receiver of the method call in the InvokeStmt i
+IinvkArg(i:I,n:Z,v:V) input              # Variable v is the nth argument of the method call in the InvokeStmt i
+IinvkRet(i:I,n:Z,v:V) input              # Variable v is the lhs of InvokeStmt i (n is always 0 - not used)
+MI(m:M,i:I) input                        # Method m contains InvokeStmt i
+StatIM(i:I,m:M) input                    # InvokeStmt i calls static method m
+VirtIM(i:I,m:M) input                    # InvokeStmt i calls instance method m
+DelegateIV(i:I, v:V) input               # Invoke Stmt i makes a call via delegate variable v.
+
+AddrOfMX(m:M,x:X) input                  # Method m has Address x
+AddrOfHFX(h:H,f:F,x:X) input             # The Field f of the abstract object allocated at AllocSite h has Address x
+AddrOfVX(v:V,x:X) input                  # Variable v has Address x
+AddrOfFX(f:F,x:X) input                  # Static field f has Address x
+
+MAlloc(m:M,l:V,h:H) input                # Method m contains stmt: l = new ... (alloc site h)
+MMove(m:M,l:V,r:V) input                 # Method m contains: l = r
+MInstFldRead(m:M,l:V,r:V,f:F) input      # Method m contains: l = r.f
+MInstFldWrite(m:M,l:V,f:F,r:V) input     # Method m contains: l.f = r
+MStatFldRead(m:M,l:V,f:F) input          # Method m contains: l = f
+MStatFldWrite(m:M,f:F,r:V) input         # Method m contains: f = r
+
+MStructHFH(m:M,h1:H,f:F,h2:H) input      # Method m contains an allocation of an array of struct (h1). f is the null field. The struct element is modeled by h2.
+TStructFH(t:T,f:F,h:H) input             # Type t has a static struct field f. The struct is modeled as a heap elem h. f points to h.
+StructHFH(h1:H,f:F,h2:H) input           # Instance field f is a struct in heap elem h1. The struct is modeled as heap elem h2.
+                                         # And, h1.f points to h2.
+
+MAddrTakenLocal(m:M,l:V,r:V) input       # Method m contains l = &r
+MAddrTakenInstFld(m:M,l:V,r:V,f:F) input # Method m contains l = &r.f
+MAddrTakenStatFld(m:M,l:V,f:F) input     # Method m contains l = &f
+MAddrTakenFunc(m1:M,l:V,m2:M)            # Method m1 contains l = &m2, where m2 is a method.
+
+MDerefLeft(m:M,l:V,r:V) input            # Method m contains *l = r
+MDerefRight(m:M,l:V,r:V) input           # Method m contains l = *r
+
+structV(v:V) input                       # Local variable v is of type struct
+structRefV(v:V) input                    # Local variable v is of type reference to struct
+thisRefV(v:V) input                      # "this" argument is passed by reference. Ex: foo(ref v)
+structH(h:H) input                       # Heap element h is of type struct
+classT(t:T) input                        # Type t is a class
+staticTM(t:T,m:M) input                  # Type t contains static method m
+staticTF(t:T,f:F) input                  # Type t contains static field f
+clinitTM(t:T,m:M) input                  # Type t contains static initializer method m
+entryPtM(m:M) input                      # Method m is an entrypoint
+
+VarEH(eh:EH,v:V)  input                  # ExceptionHandler eh has the formal paramter as Variable v
+ThrowPV(m:M,p:P,v:V)  input              # Instruction p of Method m throws Variable v
+PI(p:P,i:I) input                        # Connects program points that are invoke statements to corresponding entries in domI
+FinalEH(eh:EH,t:T,p:P) input             # ExceptionHandler eh catches an exception of Type t thrown at Program point p.
+EscapeMTP(m:M,t:T,p:P) input             # Exception of type t if thrown at Program Point p, escapes Method m.
+
+CallAt(m:M,p:P,mcallee:M) printtuples
+MThrowsH(m:M,h:H) printtuples            # The exception object h escapes Method m.
+VCatchesH(v:V,h:H) printtuples           # Variable v which is the formal parameter of some catch handler, points-to exception object h.
+
+IHM(i:I,h:H,m:M)
+DelegateIH(i:I,h:H)
+DelReceiver(i:I,h:H)
+DelFunc(i:I,m:M)
+thisIVH(i:I,v:V,h:H) printtuples         # Invoke statement i has reference variable v as the "this" variable && v points-to h
+
+Alloc(l:V,h:H)
+Move(l:V,r:V) printtuples
+InstFldRead(l:V,h:H,f:F)
+InstFldWrite(h:H,f:F,r:V)
+StatFldRead(l:V,f:F)
+StatFldWrite(f:F,r:V)
+
+StrMove(lh:H,rh:H) printtuples
+
+AddrTakenLocal(l:V,r:V)
+AddrTakenInstFld(l:V,r:V,f:F)
+AddrTakenStatFld(l:V,f:F)
+AddrTakenFunc(l:V, m:M)
+DerefLeft(l:V,r:V)
+DerefRight(l:V,r:V)
+
+reachableT(t:T) printtuples
+VH(v:V,h:H) printtuples                # Variable v may point to AllocSite h
+VX(v:V,x:X) printtuples                # Variable v may point to Address x
+FH(f:F,h:H) printtuples                # Static field f may point to AllocSite h
+FX(f:F,x:X) printtuples                # Static field f may point to Address x
+rootM(m:M) printtuples
+HFH(h1:H,f:F,h2:H) printtuples         # Field f of object allocated at AllocSite h1 may point to AllocSite h2
+HFX(h:H,f:F,x:X) printtuples           # Field f of object allocated at AllocSite h may point to Address x
+reachableI(i:I) printtuples
+reachableM(m:M) printtuples
+IM(i:I,m:M) printtuples                # InvokeStmt i may call Method m
+MM(m:M,n:M) printtuples                # Method m may call Method n
+
+###
+# Constraints
+###
+
+IHM(i,h,m2) :- VirtIM(i,m1), HT(h,t), cha(m1,t,m2).
+
+# base cases: each root method and each class initializer is reachable
+reachableM(m) :- entryPtM(m).
+reachableM(m) :- reachableT(t), clinitTM(t,m).
+# inductive case
+reachableM(m) :- IM(_,m).
+
+reachableI(i) :- MI(m,i), reachableM(m).
+
+# possibly-multiple-target call sites
+IM(i,m) :- reachableI(i), IinvkArg0(i,v), VH(v,h), IHM(i,h,m).
+IM(i,m) :- reachableI(i), thisIVH(i,v,h), IHM(i,h,m).
+
+thisIVH(i,v,h) :- IinvkArg0(i,v), VX(v,x), AddrOfVX(v1,x), VH(v1,h).
+thisIVH(i,v,h) :- IinvkArg0(i,v), VX(v,x), AddrOfHFX(h1,f,x), HFH(h1,f,h).
+thisIVH(i,v,h) :- IinvkArg0(i,v), VX(v,x), AddrOfFX(f1,x), FH(f1,h).
+
+# calls to static methods
+IM(i,m) :- reachableI(i), StatIM(i,m).
+# method call via delegates
+DelegateIH(i,h) :- reachableI(i), DelegateIV(i,v), VH(v,h).
+DelReceiver(i,rh) :- DelegateIH(i,h), HFH(h,0,rh).
+DelFunc(i,m) :- DelegateIH(i,h), HFX(h,0,x), AddrOfMX(m,x).
+IM(i,m1) :- DelFunc(i,m), DelReceiver(i,h), HT(h,t), cha(m,t,m1).
+IM(i,m) :- DelFunc(i,m), staticTM(t,m).
+VH(v,rh) :- DelReceiver(i,rh), IM(i,m), MmethArg(m,0,v).
+
+# arguments and return variables
+VH(v,h) :- IM(i,m), thisIVH(i,u,h), MmethArg(m,0,v), thisRefV(u), !structRefV(u).
+Move(v,u) :- IinvkArg(i,z,u), IM(i,m), MmethArg(m,z,v), thisRefV(u), structRefV(u).
+Move(v,u) :- IinvkArg(i,z,u), IM(i,m), MmethArg(m,z,v), !thisRefV(u).
+Move(u,v) :- IinvkRet(i,z,u), IM(i,m), MmethRet(m,z,v).
+
+Alloc(l,h)   :- reachableM(m), MAlloc(m,l,h).
+Move(l,r)   :- reachableM(m), MMove(m,l,r).
+InstFldRead(l,h,f) :- reachableM(m), MInstFldRead(m,l,r,f), VH(r,h).
+InstFldRead(l,h,f) :- reachableM(m), MInstFldRead(m,l,r,f), VX(r,x), AddrOfHFX(h,f,x).
+InstFldWrite(h,f,r) :- reachableM(m), MInstFldWrite(m,l,f,r), VH(l,h).
+InstFldWrite(h,f,r) :- reachableM(m), MInstFldWrite(m,l,f,r), VX(l,x), AddrOfHFX(h,f,x).
+StatFldRead(l,f)   :- reachableM(m), MStatFldRead(m,l,f).
+StatFldWrite(f,r)   :- reachableM(m), MStatFldWrite(m,f,r).
+
+AddrTakenLocal(l,r) :- reachableM(m), MAddrTakenLocal(m,l,r).
+AddrTakenInstFld(l,r,f) :- reachableM(m), MAddrTakenInstFld(m,l,r,f).
+AddrTakenStatFld(l,f) :- reachableM(m), MAddrTakenStatFld(m,l,f).
+AddrTakenFunc(l,m2) :- reachableM(m1), MAddrTakenFunc(m1,l,m2).
+DerefLeft(l,r) :- reachableM(m), MDerefLeft(m,l,r).
+DerefRight(l,r) :- reachableM(m), MDerefRight(m,l,r).
+
+HFH(h1,f,h2) :- reachableM(m), MStructHFH(m,h1,f,h2).
+FH(f,h) :- reachableT(t), TStructFH(t,f,h).
+HFH(h1,f,h2) :- StructHFH(h1,f,h2).
+
+# The rules below may reduce the edges in the heap points-to graph but may be more
+# computationally expensive (as compared to the above rule).
+# HFH(h1,f,h2) :- VH(v,h1), StructHFH(h1,f,h2).
+# HFH(h1,f,h2) :- FH(f,h1), StructHFH(h1,f,h2).
+# HFH(h1,f,h2) :- HFH(h0,f0,h1), StructHFH(h1,f,h2).
+
+VH(l,h) :- Alloc(l,h).
+
+VH(l,h) :- Move(l,r), VH(r,h), !structV(l).
+StrMove(lh,rh) :- Move(l,r), VH(l,lh), VH(r,rh), structV(l).
+VX(l,x) :- Move(l,r), VX(r,x).
+
+VH(l,hfh) :- InstFldRead(l,h,f), HFH(h,f,hfh), !structV(l).
+StrMove(lh,hfh) :- InstFldRead(l,h,f), VH(l,lh), HFH(h,f,hfh), structV(l).
+VX(l,x) :- InstFldRead(l,h,f), HFX(h,f,x).
+
+HFH(h,f,rh) :- InstFldWrite(h,f,r), VH(r,rh), !structV(r).
+StrMove(hfh,rh) :- InstFldWrite(h,f,r), HFH(h,f,hfh), VH(r,rh), structV(r).
+HFX(h,f,x) :- InstFldWrite(h,f,r), VX(r,x).
+
+VH(l,h) :- StatFldRead(l,f), FH(f,h), !structV(l).
+StrMove(lh,fh) :- StatFldRead(l,f), VH(l,lh), FH(f,fh), structV(l).
+VX(l,x) :- StatFldRead(l,f), FX(f,x).
+
+FH(f,h) :- StatFldWrite(f,r), VH(r,h), !structV(r).
+StrMove(fh,rh) :- StatFldWrite(f,r), FH(f,fh), VH(r,rh), structV(r).
+FX(f,x) :- StatFldWrite(f,r), VX(r,x).
+
+
+# handling structs
+StrMove(lhfh,rhfh) :- StrMove(lh,rh), HFH(lh,f, lhfh), HFH(rh,f,rhfh), structH(lhfh), structH(rhfh).
+HFH(lh,f,rhfh) :- StrMove(lh,rh), !structH(rhfh), HFH(rh,f,rhfh).
+
+
+# Handling & operator
+# v1 = &v2, v1 = &v2.f, v1 = &f, v1 = &m
+VX(v1,x) :- AddrTakenLocal(v1,v2), AddrOfVX(v2,x), !structV(v2).
+VH(v1,h) :- AddrTakenLocal(v1,v2), VH(v2,h), structV(v2).
+VX(v1,x) :- AddrTakenInstFld(v1,v2,f), VH(v2,h2), AddrOfHFX(h2,f,x), !structRefV(v1).
+VH(v1,h) :- AddrTakenInstFld(v1,v2,f), VH(v2,h2), HFH(h2,f,h), structRefV(v1).
+VX(v1,x) :- AddrTakenStatFld(v1,f), AddrOfFX(f,x), !structRefV(v1).
+VH(v1,h) :- AddrTakenStatFld(v1,f), FH(f,h), structRefV(v1).
+VX(v1,x) :- AddrTakenFunc(v1,m), AddrOfMX(m,x).
+
+
+# Handling dereference
+# *l = r
+Move(v,r) :- DerefLeft(l,r), VX(l,x), AddrOfVX(v,x).
+InstFldWrite(h,f,r) :- DerefLeft(l,r), VX(l,x), AddrOfHFX(h,f,x).
+StatFldWrite(f,r) :- DerefLeft(l,r), VX(l,x), AddrOfFX(f,x).
+
+# l = *r
+Move(l,v) :- DerefRight(l,r), VX(r,x), AddrOfVX(v,x).
+InstFldRead(l,h,f) :- DerefRight(l,r), VX(r,x), AddrOfHFX(h,f,x).
+StatFldRead(l,f) :- DerefRight(l,r), VX(r,x), AddrOfFX(f,x).
+
+
+# 1. T is a class and an instance of T is created.
+reachableT(t) :- Alloc(_,h), HT(h,t).
+# 2. T is a class and a static method declared by T is invoked
+reachableT(t) :- reachableM(m), staticTM(t,m).
+# 3. A static field declared by T is assigned.
+reachableT(t) :- StatFldWrite(f,_), staticTF(t,f).
+# 4. A static field declared by T is used and the reference to the
+#    field is not a compile-time constant.
+reachableT(t) :- StatFldRead(_,f), staticTF(t,f).
+# 5. Before a class is initialized, its direct superclass must be
+#    initialized.
+reachableT(t) :- classT(t), reachableT(s), sub(s,t).
+
+rootM(m) :- entryPtM(m).
+rootM(m) :- reachableT(t), clinitTM(t,m).
+MM(m,n) :- IM(i,n), MI(m,i).
+
+# Propagating exception points-to
+
+CallAt(m,p,mcallee) :- MI(m,i), IM(i,mcallee), PI(p,i).
+MThrowsH(m,h) :- ThrowPV(m,p,v), VH(v,h), HT(h,t), EscapeMTP(m,t,p).
+MThrowsH(m,h) :- CallAt(m,p,mcallee), MThrowsH(mcallee,h), HT(h,t), EscapeMTP(m,t,p).
+VCatchesH(ehv,h) :- ThrowPV(m,p,v), VH(v,h), HT(h,t), FinalEH(eh,t,p), VarEH(eh,ehv).
+VCatchesH(v,h) :- CallAt(m,p,mcallee), MThrowsH(mcallee,h), HT(h,t), FinalEH(eh,t,p), VarEH(eh,v).
+VH(v,h) :- VCatchesH(v,h).
+
+
+.include "relT.datalog"
+.include "relF.datalog"
+.include "relM.datalog"
+.include "relI.datalog"
+.include "relH.datalog"
+.include "relV.datalog"
+.include "relZ.datalog"
+.include "relX.datalog"
+.include "relP.datalog"
+.include "relEH.datalog"
+.include "cha.datalog"
+.include "classT.datalog"
+.include "clinitTM.datalog"
+.include "entryPtM.datalog"
+.include "HT.datalog"
+.include "IinvkArg.datalog"
+.include "IinvkArg0.datalog"
+.include "IinvkRet.datalog"
+.include "MAlloc.datalog"
+.include "MI.datalog"
+.include "MInstFldRead.datalog"
+.include "MInstFldWrite.datalog"
+.include "MmethArg.datalog"
+.include "MmethRet.datalog"
+.include "MMove.datalog"
+.include "MStatFldRead.datalog"
+.include "MStatFldWrite.datalog"
+.include "staticTF.datalog"
+.include "staticTM.datalog"
+.include "StatIM.datalog"
+.include "sub.datalog"
+.include "VirtIM.datalog"
+.include "AddrOfFX.datalog"
+.include "AddrOfHFX.datalog"
+.include "AddrOfMX.datalog"
+.include "AddrOfVX.datalog"
+.include "DelegateIV.datalog"
+.include "MAddrTakenFunc.datalog"
+.include "MAddrTakenInstFld.datalog"
+.include "MAddrTakenLocal.datalog"
+.include "MAddrTakenStatFld.datalog"
+.include "MDerefLeft.datalog"
+.include "MDerefRight.datalog"
+.include "structH.datalog"
+.include "structV.datalog"
+.include "MStructHFH.datalog"
+.include "TStructFH.datalog"
+.include "StructHFH.datalog"
+.include "structRefV.datalog"
+.include "thisRefV.datalog"
+.include "VarEH.datalog"
+.include "ThrowPV.datalog"
+.include "PI.datalog"
+.include "FinalEH.datalog"
+.include "EscapeMTP.datalog"

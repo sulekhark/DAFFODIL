@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{60A1151A-D3BB-4C0E-B92D-9D124D1B076B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Daffodil.DatalogAnalysisFW</RootNamespace>
+    <AssemblyName>Daffodil.DatalogAnalysisFW</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Cci.Analysis.ControlAndDataFlowGraph">
+      <HintPath>..\..\..\packages\Microsoft.Cci.7.0.1\lib\net451\Microsoft.Cci.Analysis.ControlAndDataFlowGraph.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.CodeModelToIL">
+      <HintPath>..\..\..\packages\Microsoft.Cci.7.0.1\lib\net451\Microsoft.Cci.CodeModelToIL.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.ILGenerator">
+      <HintPath>..\..\..\packages\Microsoft.Cci.7.0.1\lib\net451\Microsoft.Cci.ILGenerator.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.MetadataHelper, Version=0.0.0.2, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.Cci.7.0.1\lib\net451\Microsoft.Cci.MetadataHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.MetadataModel, Version=0.0.0.2, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.Cci.7.0.1\lib\net451\Microsoft.Cci.MetadataModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.MutableCodeModel">
+      <HintPath>..\..\..\packages\Microsoft.Cci.7.0.1\lib\net451\Microsoft.Cci.MutableCodeModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.MutableMetadataModel">
+      <HintPath>..\..\..\packages\Microsoft.Cci.7.0.1\lib\net451\Microsoft.Cci.MutableMetadataModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.NewILToCodeModel">
+      <HintPath>..\..\..\packages\Microsoft.Cci.7.0.1\lib\net451\Microsoft.Cci.NewILToCodeModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.PdbReader, Version=0.0.0.2, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.Cci.7.0.1\lib\net451\Microsoft.Cci.PdbReader.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.PdbWriter">
+      <HintPath>..\..\..\packages\Microsoft.Cci.7.0.1\lib\net451\Microsoft.Cci.PdbWriter.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.PeReader, Version=0.0.0.2, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.Cci.7.0.1\lib\net451\Microsoft.Cci.PeReader.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.PeWriter">
+      <HintPath>..\..\..\packages\Microsoft.Cci.7.0.1\lib\net451\Microsoft.Cci.PeWriter.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Cci.SourceModel, Version=0.0.0.2, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.Cci.7.0.1\lib\net451\Microsoft.Cci.SourceModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AnalysisNetBackend\Analyses\BackwardCopyPropagationAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\Analyses\ControlFlowAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\Analyses\DataFlowAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\Analyses\DominanceAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\Analyses\DominanceFrontierAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\Analyses\ForwardCopyPropagationAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\Analyses\LiveVariablesAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\Analyses\NaturalLoopAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\Analyses\PointsToAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\Analyses\ReachingDefinitionsAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\Analyses\SymbolicAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\Analyses\TypeInferenceAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\Analyses\WebAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\MethodBody.cs" />
+    <Compile Include="AnalysisNetBackend\Model\BasicTypeDefinitionComparer.cs" />
+    <Compile Include="AnalysisNetBackend\Model\CallGraph.cs" />
+    <Compile Include="AnalysisNetBackend\Model\ClassHierarchyAnalysis.cs" />
+    <Compile Include="AnalysisNetBackend\Model\ControlFlowGraph.cs" />
+    <Compile Include="AnalysisNetBackend\Model\FieldReferenceComparer.cs" />
+    <Compile Include="AnalysisNetBackend\Model\InstructionComparer.cs" />
+    <Compile Include="AnalysisNetBackend\Model\MethodBodyProvider.cs" />
+    <Compile Include="AnalysisNetBackend\Model\MethodReferenceDefinitionComparer.cs" />
+    <Compile Include="AnalysisNetBackend\Model\PointsToGraph.cs" />
+    <Compile Include="AnalysisNetBackend\Model\VariableComparer.cs" />
+    <Compile Include="AnalysisNetBackend\Serialization\DGMLSerializer.cs" />
+    <Compile Include="AnalysisNetBackend\Serialization\DOTSerializer.cs" />
+    <Compile Include="AnalysisNetBackend\ThreeAddressCode\ExceptionHandlers.cs" />
+    <Compile Include="AnalysisNetBackend\ThreeAddressCode\Expressions.cs" />
+    <Compile Include="AnalysisNetBackend\ThreeAddressCode\Instructions.cs" />
+    <Compile Include="AnalysisNetBackend\ThreeAddressCode\Operands.cs" />
+    <Compile Include="AnalysisNetBackend\Transformations\Disassembler.cs" />
+    <Compile Include="AnalysisNetBackend\Transformations\StaticSingleAssignment.cs" />
+    <Compile Include="AnalysisNetBackend\Types.cs" />
+    <Compile Include="AnalysisNetBackend\Utils\Exceptions.cs" />
+    <Compile Include="AnalysisNetBackend\Utils\Extensions.cs" />
+    <Compile Include="AnalysisNetBackend\Utils\Map.cs" />
+    <Compile Include="AnalysisNetBackend\Utils\OperationHelper.cs" />
+    <Compile Include="AnalysisNetBackend\Utils\Subset.cs" />
+    <Compile Include="AnalysisNetBackend\Visitors\IInstructionVisitor.cs" />
+    <Compile Include="AnalysisNetBackend\Visitors\InstructionVisitor.cs" />
+    <Compile Include="AnalysisNetBackend\Wrappers\AddressWrapper.cs" />
+    <Compile Include="AnalysisNetBackend\Wrappers\ExHandlerWrapper.cs" />
+    <Compile Include="AnalysisNetBackend\Wrappers\FieldRefWrapper.cs" />
+    <Compile Include="AnalysisNetBackend\Wrappers\HeapElemWrapper.cs" />
+    <Compile Include="AnalysisNetBackend\Wrappers\InstructionWrapper.cs" />
+    <Compile Include="AnalysisNetBackend\Wrappers\IntWrapper.cs" />
+    <Compile Include="AnalysisNetBackend\Wrappers\MethodRefWrapper.cs" />
+    <Compile Include="AnalysisNetBackend\Wrappers\TypeRefWrapper.cs" />
+    <Compile Include="AnalysisNetBackend\Wrappers\VariableWrapper.cs" />
+    <Compile Include="AnalysisNetBackend\Wrappers\WrapperProvider.cs" />
+    <Compile Include="ByteCodeAnalysis\ByteCodeAnalyzer.cs" />
+    <Compile Include="ByteCodeAnalysis\FactGenerator.cs" />
+    <Compile Include="ByteCodeAnalysis\GenericMethods.cs" />
+    <Compile Include="ByteCodeAnalysis\ClassAndMethodVisitor.cs" />
+    <Compile Include="ByteCodeAnalysis\RTAAnalyzer.cs" />
+    <Compile Include="ByteCodeAnalysis\Stubber.cs" />
+    <Compile Include="ByteCodeAnalysis\Stubs.cs" />
+    <Compile Include="ByteCodeAnalysis\Utils.cs" />
+    <Compile Include="Common\ConfigParams.cs" />
+    <Compile Include="ProgramFacts\Dom.cs" />
+    <Compile Include="ProgramFacts\Doms\DomEH.cs" />
+    <Compile Include="ProgramFacts\Doms\DomF.cs" />
+    <Compile Include="ProgramFacts\Doms\DomH.cs" />
+    <Compile Include="ProgramFacts\Doms\DomI.cs" />
+    <Compile Include="ProgramFacts\Doms\DomM.cs" />
+    <Compile Include="ProgramFacts\Doms\DomP.cs" />
+    <Compile Include="ProgramFacts\Doms\DomT.cs" />
+    <Compile Include="ProgramFacts\Doms\DomV.cs" />
+    <Compile Include="ProgramFacts\Doms\DomX.cs" />
+    <Compile Include="ProgramFacts\Doms\DomZ.cs" />
+    <Compile Include="ProgramFacts\IWrapper.cs" />
+    <Compile Include="ProgramFacts\ProgramDoms.cs" />
+    <Compile Include="ProgramFacts\ProgramRels.cs" />
+    <Compile Include="ProgramFacts\Rel.cs" />
+    <Compile Include="ProgramFacts\Relations\RelFinalMTP.cs" />
+    <Compile Include="ProgramFacts\Relations\RelAddrOfFX.cs" />
+    <Compile Include="ProgramFacts\Relations\RelAddrOfHFX.cs" />
+    <Compile Include="ProgramFacts\Relations\RelAddrOfMX.cs" />
+    <Compile Include="ProgramFacts\Relations\RelAddrOfVX.cs" />
+    <Compile Include="ProgramFacts\Relations\RelCallAt.cs" />
+    <Compile Include="ProgramFacts\Relations\RelCha.cs" />
+    <Compile Include="ProgramFacts\Relations\RelClassT.cs" />
+    <Compile Include="ProgramFacts\Relations\RelClinitTM.cs" />
+    <Compile Include="ProgramFacts\Relations\RelDelegateIV.cs" />
+    <Compile Include="ProgramFacts\Relations\RelEntryPtM.cs" />
+    <Compile Include="ProgramFacts\Relations\RelEscapeMTP.cs" />
+    <Compile Include="ProgramFacts\Relations\RelExceptionType.cs" />
+    <Compile Include="ProgramFacts\Relations\RelFH.cs" />
+    <Compile Include="ProgramFacts\Relations\RelFinalEH.cs" />
+    <Compile Include="ProgramFacts\Relations\RelFT.cs" />
+    <Compile Include="ProgramFacts\Relations\RelFX.cs" />
+    <Compile Include="ProgramFacts\Relations\RelHFH.cs" />
+    <Compile Include="ProgramFacts\Relations\RelHFX.cs" />
+    <Compile Include="ProgramFacts\Relations\RelHT.cs" />
+    <Compile Include="ProgramFacts\Relations\RelIinvkArg.cs" />
+    <Compile Include="ProgramFacts\Relations\RelIinvkArg0.cs" />
+    <Compile Include="ProgramFacts\Relations\RelIinvkRet.cs" />
+    <Compile Include="ProgramFacts\Relations\RelIM.cs" />
+    <Compile Include="ProgramFacts\Relations\RelInRange.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMAddrTakenFunc.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMAddrTakenInstFld.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMAddrTakenLocal.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMAddrTakenStatFld.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMAlloc.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMDerefLeft.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMDerefRight.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMEH.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMI.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMInstFldRead.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMInstFldWrite.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMM.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMmethArg.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMmethRet.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMMove.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMove.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMStatFldRead.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMStatFldWrite.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMStructHFH.cs" />
+    <Compile Include="ProgramFacts\Relations\RelMV.cs" />
+    <Compile Include="ProgramFacts\Relations\RelPI.cs" />
+    <Compile Include="ProgramFacts\Relations\RelPrevEH.cs" />
+    <Compile Include="ProgramFacts\Relations\RelReachableI.cs" />
+    <Compile Include="ProgramFacts\Relations\RelReachableM.cs" />
+    <Compile Include="ProgramFacts\Relations\RelReachableT.cs" />
+    <Compile Include="ProgramFacts\Relations\RelRootM.cs" />
+    <Compile Include="ProgramFacts\Relations\RelStaticTF.cs" />
+    <Compile Include="ProgramFacts\Relations\RelStaticTM.cs" />
+    <Compile Include="ProgramFacts\Relations\RelStrMove.cs" />
+    <Compile Include="ProgramFacts\Relations\RelStructH.cs" />
+    <Compile Include="ProgramFacts\Relations\RelStructHFH.cs" />
+    <Compile Include="ProgramFacts\Relations\RelStructRefV.cs" />
+    <Compile Include="ProgramFacts\Relations\RelStructV.cs" />
+    <Compile Include="ProgramFacts\Relations\RelSub.cs" />
+    <Compile Include="ProgramFacts\Relations\RelThisIVH.cs" />
+    <Compile Include="ProgramFacts\Relations\RelThisRefV.cs" />
+    <Compile Include="ProgramFacts\Relations\RelThrowPV.cs" />
+    <Compile Include="ProgramFacts\Relations\RelTM.cs" />
+    <Compile Include="ProgramFacts\Relations\RelTStructFH.cs" />
+    <Compile Include="ProgramFacts\Relations\RelVarEH.cs" />
+    <Compile Include="ProgramFacts\Relations\RelVH.cs" />
+    <Compile Include="ProgramFacts\Relations\RelVirtIM.cs" />
+    <Compile Include="ProgramFacts\Relations\RelStatIM.cs" />
+    <Compile Include="ProgramFacts\Relations\RelVT.cs" />
+    <Compile Include="ProgramFacts\Relations\RelVX.cs" />
+    <Compile Include="ProgramFacts\Relations\RelTypeEH.cs" />
+    <Compile Include="ProgramFacts\Relations\RelVHfilter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\IndexMap.cs" />
+    <Compile Include="Utils\ArraySet.cs" />
+    <Compile Include="Utils\IntArrayComparer.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

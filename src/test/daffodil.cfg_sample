@@ -1,0 +1,8 @@
+AssemblyPath= C:\Users\xyz\DAFFODIL\src\test\T12\bin\Debug\T12.exe
+DatalogDir= C:\Users\xyz\DAFFODIL\src\test\T12\datalog
+LogDir= C:\Users\xyz\DAFFODIL\src\test\T12\logs
+StubsPath= C:\Users\xyz\DAFFODIL\src\stubs\Daffodil.Stubs\bin\Debug\Daffodil.Stubs.dll
+SaveScopePath= C:\Users\xyz\DAFFODIL\src\test\T12\datalog
+LoadSavedScope= false 
+SuppressSystemExceptions= true
+SourceRoot= C:\Users\xyz\DAFFODIL\src\test\T12

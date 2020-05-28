@@ -1,0 +1,75 @@
+# Author: Sulekha Kulkarni 
+# Date: January 2020
+
+
+.include "T.dom"                         # domain of types
+.include "EH.dom"                        # domain of exception handlers
+.include "P.dom"                         # domain of program points
+.include "M.dom"                         # domain of methods
+.include "I.dom"                         # domain of invoke statements
+.include "V.dom"                         # domain of variables
+
+
+
+# Input Relations
+
+relT(t:T) input                          
+relEH(eh:EH) input
+relP(p:P) input
+relM(m:M) input
+relI(i:I) input
+relV(v:V) input
+
+sub(t1:T,t2:T) input                     # Type t1 is a subtype of Type t2
+InRange(eh:EH,p:P) input                 # An exception raised at Program point P could potentially be caught by ExceptionHandler eh
+PrevEH(eh1:EH,eh2:EH) input              # ExceptionHandler eh1 immediately precedes eh2
+TypeEH(eh:EH,t:T) input                  # ExceptionHandler eh handles exceptions of Type t
+MEH(m:M,eh:EH) input                     # Method m contains Exception Handler eh
+ExceptionType(t:T) input                 # Type t is an exception type
+MI(m:M,i:I) input                        # Method m contains InvokeStmt i
+ThrowPV(m:M,p:P,v:V)  input              # Instruction p of Method m throws Variable v
+PI(p:P,i:I) input                        # Connects program points that are invoke statements to corresponding entries in domI
+
+
+
+# Intermediate/Output relations
+MP(m:M,p:P) printtuples                  # Throw points (and method invokes) p in method m.
+BeforeEH(eh1:EH,eh2:EH)                  # Transitive closure of PrevEH
+PossibleEH(eh:EH.t:T,p:P)                # If the instruction at Program point p throws an exception of Type t, ExceptionHAndler eh may catch it.
+                                         # Ignores order of the catch blocks.
+InfeasibleEH(eh:EH,t:T,p:P)              # It is infeasible for ExceptionHandler eh to catch an exception of Type t thrown at Program point p because
+                                         # of ordering i.e. some earlier catch block is catching exceptions of the same type.
+FinalEH(eh:EH,t:T,p:P) printtuples       # ExceptionHandler eh catches an exception of Type t thrown at Program point p.
+EscapeMTP(m:M,t:T,p:P) printtuples       # Exception of type t if thrown at Program Point p, escapes Method m.
+FinalMTP(m:M,t:T,p:P) printtuples
+
+
+#Rules
+PossibleEH(eh,t,p) :- InRange(eh,p), TypeEH(eh,t).
+PossibleEH(eh,s,p) :- PossibleEH(eh,t,p), sub(s,t).
+BeforeEH(eh1,eh2) :- PrevEH(eh1,eh2).
+BeforeEH(eh1,eh3) :- BeforeEH(eh1,eh2), PrevEH(eh2,eh3).
+InfeasibleEH(eh,t,p) :- PossibleEH(eh,t,p), PossibleEH(ehb,t,p), BeforeEH(ehb,eh).
+FinalEH(eh,t,p) :- PossibleEH(eh,t,p), !InfeasibleEH(eh,t,p).
+
+MP(m,p) :- ThrowPV(m,p,v).
+MP(m,p) :- MI(m,i), PI(p,i).
+FinalMTP(m,t,p) :- MEH(m,eh), FinalEH(eh,t,p).
+EscapeMTP(m,t1,p) :- !FinalMTP(m,t1,p), ExceptionType(t1), MP(m,p).
+
+
+.include "relT.datalog"
+.include "relEH.datalog"
+.include "relP.datalog"
+.include "relM.datalog"
+.include "relI.datalog"
+.include "relV.datalog"
+.include "sub.datalog"
+.include "InRange.datalog"
+.include "PrevEH.datalog"
+.include "TypeEH.datalog"
+.include "MEH.datalog"
+.include "ExceptionType.datalog"
+.include "MI.datalog"
+.include "ThrowPV.datalog"
+.include "PI.datalog"
