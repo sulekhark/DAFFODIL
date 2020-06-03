@@ -51,7 +51,7 @@ All inputs required by DAFFODIL are given as configuration parameters in a confi
 
 **Usage**
 ---
-Perform the steps below to analyze a banchmark:
+Perform the steps below to analyze a benchmark:
    - Create a config file daffodil.cfg for a benchmark that needs to be analyzed. Configuration options are explained above. NOTE: Directories <DATALOG_DIR> and <LOG_DIR> need to be already created.
    - Execute:
 
