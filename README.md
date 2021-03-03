@@ -1,5 +1,6 @@
 # DAFFODIL (Datalog Analysis Framework for .NET IL) # 
 
+HELLO - TEST
 DAFFODIL is a Datalog analysis framework written in C#. It takes as input .NET exes/dlls, does not need source code and transitively processes all dependent dlls and system libraries. It does not handle reflection. Compilation target is .NET framework version 4.5 onwards. DAFFODIL has capability for the following:
    - Computing the scope of classes and methods for analysis: Computes scope using RTA (Rapid Type Analysis).
        + Handles generic types and methods.
